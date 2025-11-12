@@ -1,3 +1,5 @@
+//Tyler Saint Joy
+//116189402
 #include "hw7.h"
 
 bst_sf* insert_bst_sf(matrix_sf *mat, bst_sf *root) {
@@ -12,12 +14,42 @@ void free_bst_sf(bst_sf *root) {
 }
 
 matrix_sf* add_mats_sf(const matrix_sf *mat1, const matrix_sf *mat2) {
-    return NULL;
+    //allocating memory for matrix of result values
+    matrix_sf *result = malloc(sizeof(matrix_sf) + mat1 -> num_rows * mat1 -> num_cols * sizeof(int)); 
+    //create dimensions the same as mat1 
+    result -> name = '/0';
+    result -> num_rows = mat1 -> num_rows;
+    result -> num_cols = mat1 -> num_cols;
+    //iterate through matrices, add the values and store the sum in result
+    for(int i = 0; i < ((mat1 -> num_rows)*(mat1 -> num_cols)); i++){
+        result -> values[i] = mat1 -> values[i] + mat2 -> values[i]; 
+    }
+    return result; 
 }
 
 matrix_sf* mult_mats_sf(const matrix_sf *mat1, const matrix_sf *mat2) {
-   return NULL;
-}
+    //allocating memory for matrix of result values, result is mat1 rows x mat2 cols
+   matrix_sf *result = malloc(sizeof(matrix_sf) + mat1 -> num_rows * mat2 -> num_cols * sizeof(int));
+   //mat1 rows x mat2 cols
+   result -> name = '/0';
+   result -> num_rows = mat1 -> num_rows;
+   result -> num_cols = mat2 -> num_cols;
+
+   for(int i = 0; i < mat1 -> num_rows; i++){
+    for(int j = 0; j < mat2 -> num_cols; j++){
+        int tempSum = 0;
+        for(int k = 0; k < mat1 -> num_rows; k++){
+            //m1[i][k] * m2[k][j]
+            tempSum += mat1 -> values[i * mat1 -> num_cols + k] * mat2 -> values[k * mat2 -> num_cols + j]; 
+        }
+        //store [i][j]
+        result -> values[i * mat2 -> num_cols + j] = tempSum; 
+    }
+
+   }
+   return result; 
+
+}   
 
 matrix_sf* transpose_mat_sf(const matrix_sf *mat) {
     return NULL;
