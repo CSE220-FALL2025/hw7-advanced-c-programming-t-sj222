@@ -67,6 +67,8 @@ matrix_sf* evaluate_expr_sf(char name, char *expr, bst_sf *root);
  * @return the newly allocated string containing the postfix expression. 
  */
 char* infix2postfix_sf(char *infix); 
+//helper function for operator precedence
+int checkPrecedence(char op); 
 
 // This is a utility function you may use if you want. See hw7.c.
 matrix_sf *copy_matrix(unsigned int num_rows, unsigned int num_cols, int values[]);

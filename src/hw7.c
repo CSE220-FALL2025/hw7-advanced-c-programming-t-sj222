@@ -68,14 +68,14 @@ matrix_sf* mult_mats_sf(const matrix_sf *mat1, const matrix_sf *mat2) {
     //allocating memory for matrix of result values, result is mat1 rows x mat2 cols
    matrix_sf *result = malloc(sizeof(matrix_sf) + mat1 -> num_rows * mat2 -> num_cols * sizeof(int));
    //mat1 rows x mat2 cols
-   result -> name = '/0';
+   result -> name = '\0';
    result -> num_rows = mat1 -> num_rows;
    result -> num_cols = mat2 -> num_cols;
 
    for(int i = 0; i < mat1 -> num_rows; i++){
     for(int j = 0; j < mat2 -> num_cols; j++){
         int tempSum = 0;
-        for(int k = 0; k < mat1 -> num_rows; k++){
+        for(int k = 0; k < mat1 -> num_cols; k++){
             //m1[i][k] * m2[k][j]
             tempSum += mat1 -> values[i * mat1 -> num_cols + k] * mat2 -> values[k * mat2 -> num_cols + j]; 
         }
@@ -173,7 +173,6 @@ char* infix2postfix_sf(char *infix) {
         // Handle operands
         if (token >= 'A' && token <= 'Z') {
             if (postIndex > 0) {
-                postfix[postIndex++] = ' ';
             }
             postfix[postIndex++] = token;
         }
@@ -184,7 +183,6 @@ char* infix2postfix_sf(char *infix) {
         // Handle right parenthesis
         else if (token == ')') {
             while (top >= 0 && stack[top] != '(') {
-                postfix[postIndex++] = ' ';
                 postfix[postIndex++] = stack[top--];
             }
             top--;
@@ -194,8 +192,7 @@ char* infix2postfix_sf(char *infix) {
             // Pop operators with higher or equal precedence
             while (top >= 0 && 
                    stack[top] != '(' && 
-                   precedence(stack[top]) >= precedence(token)) {
-                postfix[postIndex++] = ' ';
+                   checkPrecedence(stack[top]) >= checkPrecedence(token)) {
                 postfix[postIndex++] = stack[top--];
             }
             stack[++top] = token;
@@ -203,7 +200,6 @@ char* infix2postfix_sf(char *infix) {
     }
     // Pop remaining operators from stack
     while (top >= 0) {
-        postfix[postIndex++] = ' ';
         postfix[postIndex++] = stack[top--];
     }
     postfix[postIndex] = '\0';
@@ -232,7 +228,7 @@ matrix_sf* evaluate_expr_sf(char name, char *expr, bst_sf *root) {
         else if(token == '\''){
             matrix_sf *mat = stack[top--];
             matrix_sf *result = transpose_mat_sf(mat);
-            if(mat -> name == 'A' || mat -> name == 'Z'){
+            if(mat -> name < 'A' || mat -> name > 'Z'){
                 free(mat);
             }
             result -> name = '!'; //flag as temporary
@@ -315,7 +311,6 @@ matrix_sf *execute_script_sf(char *filename) {
 }
     free(line);
     fclose(file);
-    free_bst_sf(root);
     return lastMat;
 }
 
