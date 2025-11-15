@@ -3,14 +3,50 @@
 #include "hw7.h"
 
 bst_sf* insert_bst_sf(matrix_sf *mat, bst_sf *root) {
-    return NULL;
+    //bbase case
+    if(root == NULL){
+        bst_sf *newNode = malloc (sizeof(bst_sf));
+        newNode -> mat = mat;
+        newNode -> left_child = NULL;
+        newNode -> right_child = NULL;
+        return newNode;
+    }
+    //recursive case
+    if(mat -> name < root -> mat -> name){
+        root -> left_child = insert_bst_sf(mat, root -> left_child);
+    } 
+    else{
+        root -> right_child = insert_bst_sf(mat, root -> right_child);
+    }
+    return root; 
 }
 
 matrix_sf* find_bst_sf(char name, bst_sf *root) {
-    return NULL;
+    //base case
+    if(root == NULL){
+        return NULL;
+    }
+    if(name == root -> mat -> name){
+        return root -> mat;
+    }   
+    if(name < root -> mat -> name){
+        return find_bst_sf(name, root -> left_child);
+    }
+    else{
+        return find_bst_sf(name, root -> right_child);
+    }
+
 }
 
 void free_bst_sf(bst_sf *root) {
+    if(root == NULL){
+        return;
+    }
+    //free children then free self for postorder
+    free_bst_sf(root -> left_child);
+    free_bst_sf(root -> right_child);
+    free(root -> mat);
+    free(root);
 }
 
 matrix_sf* add_mats_sf(const matrix_sf *mat1, const matrix_sf *mat2) {
@@ -52,11 +88,71 @@ matrix_sf* mult_mats_sf(const matrix_sf *mat1, const matrix_sf *mat2) {
 }   
 
 matrix_sf* transpose_mat_sf(const matrix_sf *mat) {
-    return NULL;
+    matrix_sf *result = malloc(sizeof(matrix_sf) + mat -> num_cols * mat -> num_rows * sizeof(int));
+    result -> name = '/0';
+    result -> num_rows = mat -> num_cols;
+    result -> num_cols = mat -> num_rows;
+    //result[j][i] = mat[i][j]
+    for(int i = 0; i < mat -> num_rows; i++){
+        for(int j = 0; j < mat -> num_cols; j++){
+            result -> values[j * result -> num_cols + i] = mat -> values[i * mat -> num_cols + j];
+        }
+    }
+    return result;
 }
 
 matrix_sf* create_matrix_sf(char name, const char *expr) {
-    return NULL;
+    int rows, cols;
+    const char *ptr = expr;
+    //get rows
+    while(*ptr == ' ') ptr++; 
+    rows = 0; 
+    while(*ptr >= '0' && *ptr <= '9'){
+        rows = rows * 10 + (*ptr - '0');
+        ptr++;
+    }
+    //get cols
+    while(*ptr == ' ') ptr++;
+    cols = 0;
+    while(*ptr >= '0' && *ptr <= '9'){
+        cols = cols * 10 + (*ptr - '0');
+        ptr++;
+    }
+    
+    matrix_sf *newMatrix = malloc(sizeof(matrix_sf) + rows * cols * sizeof(int));
+    newMatrix -> name = name;
+    newMatrix -> num_rows = rows;
+    newMatrix -> num_cols = cols;
+
+    while(*ptr != '[') ptr++; //go to the first [
+    ptr++; //move past [
+    
+    int index = 0;
+    //skip past spaces and semicolons
+    while(*ptr != ']'){
+        while(*ptr == ' ' || *ptr == ';'){
+            ptr++;
+        }
+        if(*ptr == ']'){
+            break;
+        }
+        int value = 0;
+        int sign = 1;
+        if(*ptr == '-'){
+            sign = 0;
+            ptr++;
+        }
+        while(*ptr >= '0' && *ptr <= '9'){
+            value = value * 10 + (*ptr - '0');
+            ptr++;
+        }
+        if(sign == 0){
+            value = -value;
+        }
+        newMatrix -> values[index] = value;
+        index++;
+    }
+    return newMatrix;   
 }
 
 char* infix2postfix_sf(char *infix) {
